@@ -593,7 +593,7 @@
         </div>
 
         <footer>
-            <p>© 2026 Belleville Spring Design Calculator | For engineering guidance only - verify all calculations</p>
+            <p>© 2025 Belleville Spring Design Calculator | For engineering guidance only - verify all calculations</p>
         </footer>
     </div>
 
@@ -604,6 +604,12 @@
             stainless_steel: { E: 190, yield: 1200 },
             bronze: { E: 110, yield: 400 }
         };
+
+        // Constants
+        const GPA_TO_MPA = 1000; // Conversion factor from GPa to MPa
+        const MAX_DEFLECTION_RATIO = 0.75; // Maximum safe deflection as fraction of cone height
+        const MIN_SAFETY_FACTOR = 1.5; // Minimum recommended safety factor for pressure regulators
+        const OPTIMAL_SAFETY_FACTOR = 2.5; // Upper bound of optimal safety factor range
 
         // Update material properties when material type is selected
         document.getElementById('material').addEventListener('change', function() {
@@ -644,7 +650,7 @@
             const Di = parseFloat(document.getElementById('innerDiameter').value);
             const t = parseFloat(document.getElementById('thickness').value);
             const h0 = parseFloat(document.getElementById('freeHeight').value);
-            const E = parseFloat(document.getElementById('youngsModulus').value) * 1000; // Convert to MPa
+            const E = parseFloat(document.getElementById('youngsModulus').value) * GPA_TO_MPA; // Convert to MPa
             const nu = parseFloat(document.getElementById('poissonsRatio').value);
             const yieldStrength = parseFloat(document.getElementById('yieldStrength').value);
             const requiredLoad = parseFloat(document.getElementById('requiredLoad').value);
@@ -660,9 +666,10 @@
                 const d = parseFloat(document.getElementById('helicalWireDiameter').value);
                 const D = parseFloat(document.getElementById('helicalMeanDiameter').value);
                 const Na = parseFloat(document.getElementById('helicalActiveCoils').value);
-                const G = parseFloat(document.getElementById('helicalShearModulus').value) * 1000; // Convert to MPa
+                const G = parseFloat(document.getElementById('helicalShearModulus').value) * GPA_TO_MPA; // Convert to MPa
                 
-                // Calculate helical spring rate: k = (G * d^4) / (8 * D^3 * Na)
+                // Helical spring rate formula: k = (G * d^4) / (8 * D^3 * Na)
+                // Standard formula for compression/extension helical springs
                 const helicalRate = (G * Math.pow(d, 4)) / (8 * Math.pow(D, 3) * Na);
                 
                 helicalData = {
@@ -691,15 +698,17 @@
             const r = Di / 2;
             const ratio = De / Di;
 
-            // Calculate Almen-Laszlo constants
+            // Calculate Almen-Laszlo constants for Belleville springs
+            // These constants are derived from the theory of conical shells
+            // Reference: Almen & Laszlo (1936), "The Uniform-Section Disk Spring"
             const K1 = (1 / Math.PI) * ((ratio - 1) / ratio) * (ratio / Math.log(ratio) - 1);
             const K2 = (6 / (Math.PI * Math.log(ratio))) * ((ratio - 1) / Math.log(ratio) - 1);
             const K3 = (6 / (Math.PI * Math.log(ratio))) * ((ratio - 1) / (2 * Math.log(ratio)) - 1);
 
-            // Spring rate calculation (N/mm)
+            // Spring rate calculation (N/mm) using Almen-Laszlo formula
             const bellevilleRate = (4 * E * Math.pow(t, 4)) / (K1 * (1 - Math.pow(nu, 2)) * Math.pow(De, 2));
 
-            // Combined spring rate if helical is included
+            // Combined spring rate if helical is included (series connection)
             const combinedRate = includeHelical ? 
                 (1 / ((1 / bellevilleRate) + (1 / helicalData.springRate))) : 
                 bellevilleRate;
@@ -709,6 +718,7 @@
             const loadAtDeflection = combinedRate * s;
 
             // Stress calculation (MPa) - for Belleville only
+            // M is the stress coefficient from Almen-Laszlo theory
             const M = 6 / Math.log(ratio);
             const stress = (4 * E) / (M * (1 - Math.pow(nu, 2))) * (Math.pow(t, 2) / Math.pow(De, 2)) * s;
 
@@ -732,7 +742,7 @@
             }
 
             // Generate force and stress curves
-            const maxDeflection = Math.min(h0 * 0.75, h0); // Max 75% of cone height
+            const maxDeflection = Math.min(h0 * MAX_DEFLECTION_RATIO, h0); // Max 75% of cone height
             const numPoints = 50;
             const deflectionPoints = [];
             const forcePointsBelleville = [];
@@ -781,17 +791,17 @@
             const statusDiv = document.getElementById('statusMessage');
             statusDiv.innerHTML = '';
 
-            if (safetyFactor < 1.5) {
+            if (safetyFactor < MIN_SAFETY_FACTOR) {
                 statusDiv.innerHTML = `
                     <div class="warning">
                         <h4>⚠️ Warning: Low Safety Factor</h4>
-                        <p>The design has a safety factor of ${safetyFactor.toFixed(2)}, which is below the recommended minimum of 1.5 for pressure regulator applications.</p>
+                        <p>The design has a safety factor of ${safetyFactor.toFixed(2)}, which is below the recommended minimum of ${MIN_SAFETY_FACTOR} for pressure regulator applications.</p>
                     </div>
                 `;
                 recommendations.push('Increase material thickness or use higher strength material');
                 recommendations.push('Consider reducing the required deflection');
                 recommendations.push('Review the load requirements');
-            } else if (safetyFactor >= 1.5 && safetyFactor <= 2.5) {
+            } else if (safetyFactor >= MIN_SAFETY_FACTOR && safetyFactor <= OPTIMAL_SAFETY_FACTOR) {
                 statusDiv.innerHTML = `
                     <div class="success">
                         <h4>✓ Acceptable Design</h4>
@@ -818,7 +828,7 @@
 
             if (deflectionRatio > 75) {
                 recommendations.push('Deflection exceeds 75% of cone height - risk of permanent deformation');
-                recommendations.push('Recommended maximum deflection: ' + (h0 * 0.75).toFixed(2) + ' mm');
+                recommendations.push('Recommended maximum deflection: ' + (h0 * MAX_DEFLECTION_RATIO).toFixed(2) + ' mm');
             } else {
                 recommendations.push('Deflection ratio is within safe limits (< 75% of cone height)');
             }

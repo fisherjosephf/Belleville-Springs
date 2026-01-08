@@ -203,4 +203,4 @@ This project is provided as-is for educational and engineering guidance purposes
 ---
 
 **Version**: 1.0  
-**Last Updated**: January 2026
+**Last Updated**: January 2025
