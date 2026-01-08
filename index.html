@@ -401,23 +401,23 @@
                     <div class="form-grid">
                         <div class="form-group">
                             <label for="outerDiameter">Outer Diameter (De)</label>
-                            <input type="number" id="outerDiameter" step="0.1" required>
-                            <small>Outside diameter of the spring (mm)</small>
+                            <input type="number" id="outerDiameter" step="0.001" required>
+                            <small>Outside diameter of the spring (in)</small>
                         </div>
                         <div class="form-group">
                             <label for="innerDiameter">Inner Diameter (Di)</label>
-                            <input type="number" id="innerDiameter" step="0.1" required>
-                            <small>Inside diameter of the spring (mm)</small>
+                            <input type="number" id="innerDiameter" step="0.001" required>
+                            <small>Inside diameter of the spring (in)</small>
                         </div>
                         <div class="form-group">
                             <label for="thickness">Material Thickness (t)</label>
-                            <input type="number" id="thickness" step="0.01" required>
-                            <small>Thickness of the material (mm)</small>
+                            <input type="number" id="thickness" step="0.0001" required>
+                            <small>Thickness of the material (in)</small>
                         </div>
                         <div class="form-group">
                             <label for="freeHeight">Free Height (h₀)</label>
-                            <input type="number" id="freeHeight" step="0.01" required>
-                            <small>Cone height at no load (mm)</small>
+                            <input type="number" id="freeHeight" step="0.0001" required>
+                            <small>Cone height at no load (in)</small>
                         </div>
                     </div>
                 </div>
@@ -430,16 +430,16 @@
                             <label for="material">Material Type</label>
                             <select id="material" required>
                                 <option value="">Select Material</option>
-                                <option value="spring_steel">Spring Steel (E=206 GPa)</option>
-                                <option value="stainless_steel">Stainless Steel (E=190 GPa)</option>
-                                <option value="bronze">Bronze (E=110 GPa)</option>
+                                <option value="spring_steel">Spring Steel (E=30 Mpsi)</option>
+                                <option value="stainless_steel">Stainless Steel (E=28 Mpsi)</option>
+                                <option value="bronze">Bronze (E=16 Mpsi)</option>
                                 <option value="custom">Custom</option>
                             </select>
                         </div>
                         <div class="form-group">
                             <label for="youngsModulus">Young's Modulus (E)</label>
-                            <input type="number" id="youngsModulus" step="1" required>
-                            <small>Elastic modulus in GPa</small>
+                            <input type="number" id="youngsModulus" step="100000" required>
+                            <small>Elastic modulus in psi</small>
                         </div>
                         <div class="form-group">
                             <label for="poissonsRatio">Poisson's Ratio (ν)</label>
@@ -448,8 +448,8 @@
                         </div>
                         <div class="form-group">
                             <label for="yieldStrength">Yield Strength</label>
-                            <input type="number" id="yieldStrength" step="10" required>
-                            <small>Material yield strength (MPa)</small>
+                            <input type="number" id="yieldStrength" step="1000" required>
+                            <small>Material yield strength (psi)</small>
                         </div>
                     </div>
                 </div>
@@ -460,18 +460,18 @@
                     <div class="form-grid">
                         <div class="form-group">
                             <label for="requiredLoad">Required Load (F)</label>
-                            <input type="number" id="requiredLoad" step="1" required>
-                            <small>Operating load required (N)</small>
+                            <input type="number" id="requiredLoad" step="0.1" required>
+                            <small>Operating load required (lbf)</small>
                         </div>
                         <div class="form-group">
                             <label for="requiredDeflection">Required Deflection (s)</label>
-                            <input type="number" id="requiredDeflection" step="0.01" required>
-                            <small>Required deflection (mm)</small>
+                            <input type="number" id="requiredDeflection" step="0.0001" required>
+                            <small>Required deflection (in)</small>
                         </div>
                         <div class="form-group">
                             <label for="regulatorPressure">Regulator Pressure</label>
-                            <input type="number" id="regulatorPressure" step="0.1" required>
-                            <small>Operating pressure (bar)</small>
+                            <input type="number" id="regulatorPressure" step="1" required>
+                            <small>Operating pressure (psi)</small>
                         </div>
                         <div class="form-group">
                             <label for="stackConfig">Stack Configuration</label>
@@ -503,13 +503,13 @@
                             <div class="form-grid">
                                 <div class="form-group">
                                     <label for="helicalWireDiameter">Wire Diameter (d)</label>
-                                    <input type="number" id="helicalWireDiameter" step="0.1">
-                                    <small>Helical spring wire diameter (mm)</small>
+                                    <input type="number" id="helicalWireDiameter" step="0.001">
+                                    <small>Helical spring wire diameter (in)</small>
                                 </div>
                                 <div class="form-group">
                                     <label for="helicalMeanDiameter">Mean Coil Diameter (D)</label>
-                                    <input type="number" id="helicalMeanDiameter" step="0.1">
-                                    <small>Mean diameter of coil (mm)</small>
+                                    <input type="number" id="helicalMeanDiameter" step="0.001">
+                                    <small>Mean diameter of coil (in)</small>
                                 </div>
                                 <div class="form-group">
                                     <label for="helicalActiveCoils">Active Coils (Na)</label>
@@ -518,8 +518,8 @@
                                 </div>
                                 <div class="form-group">
                                     <label for="helicalShearModulus">Shear Modulus (G)</label>
-                                    <input type="number" id="helicalShearModulus" step="1" value="79.3">
-                                    <small>Shear modulus in GPa (Steel: 79.3)</small>
+                                    <input type="number" id="helicalShearModulus" step="100000" value="11500000">
+                                    <small>Shear modulus in psi (Steel: 11.5 Mpsi)</small>
                                 </div>
                             </div>
                         </div>
@@ -538,17 +538,17 @@
                     <div class="result-item">
                         <h4>Spring Rate</h4>
                         <div class="value" id="springRate">-</div>
-                        <div class="unit">N/mm</div>
+                        <div class="unit">lbf/in</div>
                     </div>
                     <div class="result-item">
                         <h4>Load at Deflection</h4>
                         <div class="value" id="loadAtDeflection">-</div>
-                        <div class="unit">N</div>
+                        <div class="unit">lbf</div>
                     </div>
                     <div class="result-item">
                         <h4>Maximum Stress</h4>
                         <div class="value" id="maxStress">-</div>
-                        <div class="unit">MPa</div>
+                        <div class="unit">psi</div>
                     </div>
                     <div class="result-item">
                         <h4>Safety Factor</h4>
@@ -563,7 +563,7 @@
                     <div class="result-item">
                         <h4>Stack Load</h4>
                         <div class="value" id="stackLoad">-</div>
-                        <div class="unit">N</div>
+                        <div class="unit">lbf</div>
                     </div>
                 </div>
 
@@ -598,15 +598,14 @@
     </div>
 
     <script>
-        // Material presets
+        // Material presets - IPS units (psi)
         const materials = {
-            spring_steel: { E: 206, yield: 1400 },
-            stainless_steel: { E: 190, yield: 1200 },
-            bronze: { E: 110, yield: 400 }
+            spring_steel: { E: 30000000, yield: 203000 },      // 206 GPa = 30M psi, 1400 MPa = 203k psi
+            stainless_steel: { E: 28000000, yield: 174000 },   // 190 GPa = 28M psi, 1200 MPa = 174k psi
+            bronze: { E: 16000000, yield: 58000 }              // 110 GPa = 16M psi, 400 MPa = 58k psi
         };
 
         // Constants
-        const GPA_TO_MPA = 1000; // Conversion factor from GPa to MPa
         const MAX_DEFLECTION_RATIO = 0.75; // Maximum safe deflection as fraction of cone height
         const MIN_SAFETY_FACTOR = 1.5; // Minimum recommended safety factor for pressure regulators
         const OPTIMAL_SAFETY_FACTOR = 2.5; // Upper bound of optimal safety factor range
@@ -645,14 +644,14 @@
         });
 
         function calculateSpring() {
-            // Get input values
+            // Get input values - all in IPS units (inches, psi, lbf)
             const De = parseFloat(document.getElementById('outerDiameter').value);
             const Di = parseFloat(document.getElementById('innerDiameter').value);
             const t = parseFloat(document.getElementById('thickness').value);
             const h0 = parseFloat(document.getElementById('freeHeight').value);
-            const E = parseFloat(document.getElementById('youngsModulus').value) * GPA_TO_MPA; // Convert to MPa
+            const E = parseFloat(document.getElementById('youngsModulus').value); // Already in psi
             const nu = parseFloat(document.getElementById('poissonsRatio').value);
-            const yieldStrength = parseFloat(document.getElementById('yieldStrength').value);
+            const yieldStrength = parseFloat(document.getElementById('yieldStrength').value); // Already in psi
             const requiredLoad = parseFloat(document.getElementById('requiredLoad').value);
             const requiredDeflection = parseFloat(document.getElementById('requiredDeflection').value);
             const regulatorPressure = parseFloat(document.getElementById('regulatorPressure').value);
@@ -666,10 +665,11 @@
                 const d = parseFloat(document.getElementById('helicalWireDiameter').value);
                 const D = parseFloat(document.getElementById('helicalMeanDiameter').value);
                 const Na = parseFloat(document.getElementById('helicalActiveCoils').value);
-                const G = parseFloat(document.getElementById('helicalShearModulus').value) * GPA_TO_MPA; // Convert to MPa
+                const G = parseFloat(document.getElementById('helicalShearModulus').value); // Already in psi
                 
                 // Helical spring rate formula: k = (G * d^4) / (8 * D^3 * Na)
                 // Standard formula for compression/extension helical springs
+                // Result in lbf/in
                 const helicalRate = (G * Math.pow(d, 4)) / (8 * Math.pow(D, 3) * Na);
                 
                 helicalData = {
@@ -705,7 +705,7 @@
             const K2 = (6 / (Math.PI * Math.log(ratio))) * ((ratio - 1) / Math.log(ratio) - 1);
             const K3 = (6 / (Math.PI * Math.log(ratio))) * ((ratio - 1) / (2 * Math.log(ratio)) - 1);
 
-            // Spring rate calculation (N/mm) using Almen-Laszlo formula
+            // Spring rate calculation (lbf/in) using Almen-Laszlo formula
             const bellevilleRate = (4 * E * Math.pow(t, 4)) / (K1 * (1 - Math.pow(nu, 2)) * Math.pow(De, 2));
 
             // Combined spring rate if helical is included (series connection)
@@ -717,7 +717,7 @@
             const s = requiredDeflection;
             const loadAtDeflection = combinedRate * s;
 
-            // Stress calculation (MPa) - for Belleville only
+            // Stress calculation (psi) - for Belleville only
             // M is the stress coefficient from Almen-Laszlo theory
             const M = 6 / Math.log(ratio);
             const stress = (4 * E) / (M * (1 - Math.pow(nu, 2))) * (Math.pow(t, 2) / Math.pow(De, 2)) * s;
@@ -821,14 +821,14 @@
             }
 
             if (includeHelical) {
-                recommendations.push('Combined configuration: Belleville spring rate = ' + bellevilleRate.toFixed(2) + ' N/mm, Helical spring rate = ' + helicalData.springRate.toFixed(2) + ' N/mm');
-                recommendations.push('Combined spring rate = ' + combinedRate.toFixed(2) + ' N/mm (springs in series)');
+                recommendations.push('Combined configuration: Belleville spring rate = ' + bellevilleRate.toFixed(2) + ' lbf/in, Helical spring rate = ' + helicalData.springRate.toFixed(2) + ' lbf/in');
+                recommendations.push('Combined spring rate = ' + combinedRate.toFixed(2) + ' lbf/in (springs in series)');
                 recommendations.push('The helical spring will provide additional compliance and vibration damping');
             }
 
             if (deflectionRatio > 75) {
                 recommendations.push('Deflection exceeds 75% of cone height - risk of permanent deformation');
-                recommendations.push('Recommended maximum deflection: ' + (h0 * MAX_DEFLECTION_RATIO).toFixed(2) + ' mm');
+                recommendations.push('Recommended maximum deflection: ' + (h0 * MAX_DEFLECTION_RATIO).toFixed(4) + ' in');
             } else {
                 recommendations.push('Deflection ratio is within safe limits (< 75% of cone height)');
             }
@@ -844,13 +844,13 @@
                 recommendations.push('Material thickness is relatively high - verify deflection characteristics');
             }
 
-            recommendations.push('For pressure regulator at ' + regulatorPressure + ' bar, ensure consistent force-deflection curve');
+            recommendations.push('For pressure regulator at ' + regulatorPressure + ' psi, ensure consistent force-deflection curve');
             
             if (stackConfig === 'series') {
-                recommendations.push('Series configuration: Total deflection = ' + stackDeflection.toFixed(2) + ' mm with ' + numSprings + ' springs');
+                recommendations.push('Series configuration: Total deflection = ' + stackDeflection.toFixed(4) + ' in with ' + numSprings + ' springs');
                 recommendations.push('Series stacking provides increased deflection range for pressure regulation');
             } else if (stackConfig === 'parallel') {
-                recommendations.push('Parallel configuration: Total load capacity = ' + stackLoad.toFixed(2) + ' N with ' + numSprings + ' springs');
+                recommendations.push('Parallel configuration: Total load capacity = ' + stackLoad.toFixed(2) + ' lbf with ' + numSprings + ' springs');
                 recommendations.push('Parallel stacking provides higher load capacity for pressure regulation');
             }
 
@@ -953,12 +953,12 @@
             svg.innerHTML += `
                 <text x="${width / 2}" y="${height - 5}" 
                       text-anchor="middle" font-size="14" font-weight="600" fill="#333">
-                    Deflection (mm)
+                    Deflection (in)
                 </text>
                 <text x="${15}" y="${height / 2}" 
                       text-anchor="middle" font-size="14" font-weight="600" fill="#333"
                       transform="rotate(-90 15 ${height / 2})">
-                    Force (N)
+                    Force (lbf)
                 </text>
             `;
             
@@ -1065,12 +1065,12 @@
             svg.innerHTML += `
                 <text x="${width / 2}" y="${height - 5}" 
                       text-anchor="middle" font-size="14" font-weight="600" fill="#333">
-                    Deflection (mm)
+                    Deflection (in)
                 </text>
                 <text x="${15}" y="${height / 2}" 
                       text-anchor="middle" font-size="14" font-weight="600" fill="#333"
                       transform="rotate(-90 15 ${height / 2})">
-                    Stress (MPa)
+                    Stress (psi)
                 </text>
             `;
             

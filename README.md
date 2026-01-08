@@ -20,9 +20,9 @@ Belleville springs, also known as disc springs or conical spring washers, are wi
   - Stress vs Displacement plots with yield strength limits
   - Support for comparing Belleville, helical, and combined configurations
 - **Material Presets**: Pre-configured properties for common materials:
-  - Spring Steel (E=206 GPa)
-  - Stainless Steel (E=190 GPa)
-  - Bronze (E=110 GPa)
+  - Spring Steel (E=30 Mpsi)
+  - Stainless Steel (E=28 Mpsi)
+  - Bronze (E=16 Mpsi)
   - Custom material support
 - **Pressure Regulator Specific Guidance**: Recommendations tailored for pressure regulator applications
 - **Real-time Results**: Instant calculation and visualization of design parameters
@@ -42,39 +42,39 @@ Belleville springs, also known as disc springs or conical spring washers, are wi
 ### Input Parameters
 
 #### 1. Spring Geometry
-- **Outer Diameter (De)**: Outside diameter of the disc spring in mm
-- **Inner Diameter (Di)**: Inside diameter of the disc spring in mm
-- **Material Thickness (t)**: Thickness of the material in mm
-- **Free Height (h₀)**: Cone height at no load in mm
+- **Outer Diameter (De)**: Outside diameter of the disc spring in inches
+- **Inner Diameter (Di)**: Inside diameter of the disc spring in inches
+- **Material Thickness (t)**: Thickness of the material in inches
+- **Free Height (h₀)**: Cone height at no load in inches
 
 #### 2. Material Properties
 - **Material Type**: Select from preset materials or use custom
-- **Young's Modulus (E)**: Elastic modulus in GPa
+- **Young's Modulus (E)**: Elastic modulus in psi
 - **Poisson's Ratio (ν)**: Typically 0.3 for steel materials
-- **Yield Strength**: Material yield strength in MPa
+- **Yield Strength**: Material yield strength in psi
 
 #### 3. Loading Requirements
-- **Required Load (F)**: Operating load needed in Newtons
-- **Required Deflection (s)**: Required deflection in mm
-- **Regulator Pressure**: Operating pressure in bar
+- **Required Load (F)**: Operating load needed in pounds-force (lbf)
+- **Required Deflection (s)**: Required deflection in inches
+- **Regulator Pressure**: Operating pressure in psi
 - **Stack Configuration**: Choose single, series, or parallel configuration
 - **Number of Springs**: Number of springs in the stack
 - **Include Helical Spring**: Optional checkbox to add a helical spring in series with the Belleville spring
-  - **Wire Diameter (d)**: Diameter of the helical spring wire in mm
-  - **Mean Coil Diameter (D)**: Mean diameter of the helical coil in mm
+  - **Wire Diameter (d)**: Diameter of the helical spring wire in inches
+  - **Mean Coil Diameter (D)**: Mean diameter of the helical coil in inches
   - **Active Coils (Na)**: Number of active coils
-  - **Shear Modulus (G)**: Shear modulus in GPa (default 79.3 for steel)
+  - **Shear Modulus (G)**: Shear modulus in psi (default 11.5 Mpsi for steel)
 
 ### Understanding Results
 
 The calculator provides:
 
-1. **Spring Rate (N/mm)**: Stiffness of the spring (combined if helical is included)
-2. **Load at Deflection (N)**: Actual load at the specified deflection
-3. **Maximum Stress (MPa)**: Peak stress in the Belleville spring material
+1. **Spring Rate (lbf/in)**: Stiffness of the spring (combined if helical is included)
+2. **Load at Deflection (lbf)**: Actual load at the specified deflection
+3. **Maximum Stress (psi)**: Peak stress in the Belleville spring material
 4. **Safety Factor**: Ratio of yield strength to actual stress (≥1.5 recommended)
 5. **Deflection Ratio (%)**: Percentage of cone height (should be <75%)
-6. **Stack Load (N)**: Total load considering stack configuration
+6. **Stack Load (lbf)**: Total load considering stack configuration
 7. **Force vs Displacement Plot**: Interactive chart showing force curves for Belleville, helical (if included), and combined configurations
 8. **Stress vs Displacement Plot**: Interactive chart showing stress buildup with yield strength limit
 
@@ -145,22 +145,22 @@ Belleville springs in pressure regulators:
 
 ## Example Use Case
 
-**Design Scenario**: Pressure regulator for 10 bar operating pressure
+**Design Scenario**: Pressure regulator for 1500 psi operating pressure
 
 **Inputs:**
-- Outer Diameter: 50 mm
-- Inner Diameter: 25 mm
-- Thickness: 2 mm
-- Free Height: 3 mm
-- Material: Spring Steel (E=206 GPa, Yield=1400 MPa)
-- Required Load: 500 N
-- Required Deflection: 1.5 mm
+- Outer Diameter: 2.0 in
+- Inner Diameter: 1.0 in
+- Thickness: 0.08 in
+- Free Height: 0.12 in
+- Material: Spring Steel (E=30 Mpsi, Yield=203 ksi)
+- Required Load: 110 lbf
+- Required Deflection: 0.06 in
 - Stack: Single spring
 
 **Expected Results:**
-- Spring rate: ~333 N/mm
-- Load at deflection: ~500 N
-- Maximum stress: ~800 MPa
+- Spring rate: ~1850 lbf/in
+- Load at deflection: ~110 lbf
+- Maximum stress: ~115 ksi
 - Safety factor: ~1.75 ✓
 - Deflection ratio: 50% ✓
 
