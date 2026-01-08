@@ -14,6 +14,11 @@ Belleville springs, also known as disc springs or conical spring washers, are wi
   - Load and deflection analysis
   - Stress analysis with safety factor calculations
   - Stack configuration support (single, series, parallel)
+- **Helical Spring Combination**: Option to combine Belleville and helical springs in series for enhanced performance
+- **Graphical Analysis**:
+  - Force vs Displacement plots showing spring behavior
+  - Stress vs Displacement plots with yield strength limits
+  - Support for comparing Belleville, helical, and combined configurations
 - **Material Presets**: Pre-configured properties for common materials:
   - Spring Steel (E=206 GPa)
   - Stainless Steel (E=190 GPa)
@@ -22,6 +27,7 @@ Belleville springs, also known as disc springs or conical spring washers, are wi
 - **Pressure Regulator Specific Guidance**: Recommendations tailored for pressure regulator applications
 - **Real-time Results**: Instant calculation and visualization of design parameters
 - **Design Recommendations**: Automated suggestions for optimizing spring design
+- **Reference Implementation**: Based on Belleville Spring Design Guide.pdf and Belleville_Springs.py
 
 ## How to Use
 
@@ -53,17 +59,24 @@ Belleville springs, also known as disc springs or conical spring washers, are wi
 - **Regulator Pressure**: Operating pressure in bar
 - **Stack Configuration**: Choose single, series, or parallel configuration
 - **Number of Springs**: Number of springs in the stack
+- **Include Helical Spring**: Optional checkbox to add a helical spring in series with the Belleville spring
+  - **Wire Diameter (d)**: Diameter of the helical spring wire in mm
+  - **Mean Coil Diameter (D)**: Mean diameter of the helical coil in mm
+  - **Active Coils (Na)**: Number of active coils
+  - **Shear Modulus (G)**: Shear modulus in GPa (default 79.3 for steel)
 
 ### Understanding Results
 
 The calculator provides:
 
-1. **Spring Rate (N/mm)**: Stiffness of the spring
+1. **Spring Rate (N/mm)**: Stiffness of the spring (combined if helical is included)
 2. **Load at Deflection (N)**: Actual load at the specified deflection
-3. **Maximum Stress (MPa)**: Peak stress in the material
+3. **Maximum Stress (MPa)**: Peak stress in the Belleville spring material
 4. **Safety Factor**: Ratio of yield strength to actual stress (≥1.5 recommended)
 5. **Deflection Ratio (%)**: Percentage of cone height (should be <75%)
 6. **Stack Load (N)**: Total load considering stack configuration
+7. **Force vs Displacement Plot**: Interactive chart showing force curves for Belleville, helical (if included), and combined configurations
+8. **Stress vs Displacement Plot**: Interactive chart showing stress buildup with yield strength limit
 
 ### Design Guidelines
 
@@ -84,6 +97,13 @@ The calculator provides:
 - **Series (Same Direction)**: Increases total deflection, maintains load
 - **Parallel (Opposite Direction)**: Increases total load, maintains deflection
 - **Single**: Individual spring performance
+
+#### Combined Spring Systems
+When a helical spring is combined with a Belleville spring in series:
+- The combined spring rate is calculated as: 1/k_combined = 1/k_belleville + 1/k_helical
+- This configuration provides more linear force-deflection characteristics
+- Useful for applications requiring vibration damping
+- The helical spring adds compliance while the Belleville maintains high load capacity
 
 ## Technical Background
 
@@ -177,6 +197,8 @@ This project is provided as-is for educational and engineering guidance purposes
 - ISO 19690: Disc springs - Quality specifications
 - Almen, J. O., & Laszlo, A. (1936). "The Uniform-Section Disk Spring"
 - Spring Manufacturers Institute guidelines
+- **Belleville Spring Design Guide.pdf**: Comprehensive design reference (included in repository)
+- **Belleville_Springs.py**: Python implementation of calculator formulas (included in repository)
 
 ---
 

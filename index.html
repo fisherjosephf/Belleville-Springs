@@ -292,6 +292,88 @@
             max-width: 100%;
             height: auto;
         }
+
+        .chart-container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .chart-wrapper {
+            position: relative;
+            min-height: 400px;
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 10px;
+        }
+
+        .chart-wrapper svg {
+            width: 100%;
+            height: 400px;
+        }
+
+        .chart-title {
+            text-align: center;
+            font-weight: 600;
+            font-size: 1.1em;
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .chart-legend {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .legend-color {
+            width: 30px;
+            height: 3px;
+            border-radius: 2px;
+        }
+
+        .helical-section {
+            background: #e3f2fd;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            border-left: 5px solid #2196f3;
+        }
+
+        .helical-section h4 {
+            color: #1976d2;
+            margin-bottom: 15px;
+        }
+
+        .toggle-section {
+            margin: 20px 0;
+        }
+
+        .toggle-label {
+            display: flex;
+            align-items: center;
+            font-weight: 600;
+            color: #333;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .toggle-label input[type="checkbox"] {
+            margin-right: 10px;
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -407,6 +489,41 @@
                             <small>Number of springs in the configuration</small>
                         </div>
                     </div>
+                    
+                    <!-- Helical Spring Combination Option -->
+                    <div class="helical-section">
+                        <div class="toggle-section">
+                            <label class="toggle-label">
+                                <input type="checkbox" id="includeHelical">
+                                Include Helical Spring (Combined Configuration)
+                            </label>
+                        </div>
+                        <div id="helicalInputs" style="display: none;">
+                            <h4>Helical Spring Parameters</h4>
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label for="helicalWireDiameter">Wire Diameter (d)</label>
+                                    <input type="number" id="helicalWireDiameter" step="0.1">
+                                    <small>Helical spring wire diameter (mm)</small>
+                                </div>
+                                <div class="form-group">
+                                    <label for="helicalMeanDiameter">Mean Coil Diameter (D)</label>
+                                    <input type="number" id="helicalMeanDiameter" step="0.1">
+                                    <small>Mean diameter of coil (mm)</small>
+                                </div>
+                                <div class="form-group">
+                                    <label for="helicalActiveCoils">Active Coils (Na)</label>
+                                    <input type="number" id="helicalActiveCoils" step="0.1">
+                                    <small>Number of active coils</small>
+                                </div>
+                                <div class="form-group">
+                                    <label for="helicalShearModulus">Shear Modulus (G)</label>
+                                    <input type="number" id="helicalShearModulus" step="1" value="79.3">
+                                    <small>Shear modulus in GPa (Steel: 79.3)</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="button-group">
@@ -452,6 +569,22 @@
 
                 <div id="statusMessage"></div>
 
+                <div class="chart-container">
+                    <div class="chart-title">Force vs Displacement</div>
+                    <div class="chart-wrapper">
+                        <svg id="forceChart" viewBox="0 0 800 400" preserveAspectRatio="xMidYMid meet"></svg>
+                    </div>
+                    <div id="forceLegend" class="chart-legend"></div>
+                </div>
+
+                <div class="chart-container">
+                    <div class="chart-title">Stress vs Displacement</div>
+                    <div class="chart-wrapper">
+                        <svg id="stressChart" viewBox="0 0 800 400" preserveAspectRatio="xMidYMid meet"></svg>
+                    </div>
+                    <div id="stressLegend" class="chart-legend"></div>
+                </div>
+
                 <div class="recommendations">
                     <h4>Design Recommendations for Pressure Regulator Application:</h4>
                     <ul id="recommendationsList"></ul>
@@ -481,6 +614,24 @@
             }
         });
 
+        // Toggle helical spring inputs
+        document.getElementById('includeHelical').addEventListener('change', function() {
+            const helicalInputs = document.getElementById('helicalInputs');
+            if (this.checked) {
+                helicalInputs.style.display = 'block';
+                // Make helical inputs required when checked
+                document.getElementById('helicalWireDiameter').required = true;
+                document.getElementById('helicalMeanDiameter').required = true;
+                document.getElementById('helicalActiveCoils').required = true;
+            } else {
+                helicalInputs.style.display = 'none';
+                // Remove required attribute when unchecked
+                document.getElementById('helicalWireDiameter').required = false;
+                document.getElementById('helicalMeanDiameter').required = false;
+                document.getElementById('helicalActiveCoils').required = false;
+            }
+        });
+
         // Form submission
         document.getElementById('springForm').addEventListener('submit', function(e) {
             e.preventDefault();
@@ -501,6 +652,27 @@
             const regulatorPressure = parseFloat(document.getElementById('regulatorPressure').value);
             const stackConfig = document.getElementById('stackConfig').value;
             const numSprings = parseInt(document.getElementById('numberOfSprings').value);
+
+            // Helical spring parameters (if included)
+            const includeHelical = document.getElementById('includeHelical').checked;
+            let helicalData = null;
+            if (includeHelical) {
+                const d = parseFloat(document.getElementById('helicalWireDiameter').value);
+                const D = parseFloat(document.getElementById('helicalMeanDiameter').value);
+                const Na = parseFloat(document.getElementById('helicalActiveCoils').value);
+                const G = parseFloat(document.getElementById('helicalShearModulus').value) * 1000; // Convert to MPa
+                
+                // Calculate helical spring rate: k = (G * d^4) / (8 * D^3 * Na)
+                const helicalRate = (G * Math.pow(d, 4)) / (8 * Math.pow(D, 3) * Na);
+                
+                helicalData = {
+                    wireDiameter: d,
+                    meanDiameter: D,
+                    activeCoils: Na,
+                    shearModulus: G,
+                    springRate: helicalRate
+                };
+            }
 
             // Validation
             if (De <= Di) {
@@ -525,13 +697,18 @@
             const K3 = (6 / (Math.PI * Math.log(ratio))) * ((ratio - 1) / (2 * Math.log(ratio)) - 1);
 
             // Spring rate calculation (N/mm)
-            const springRate = (4 * E * Math.pow(t, 4)) / (K1 * (1 - Math.pow(nu, 2)) * Math.pow(De, 2));
+            const bellevilleRate = (4 * E * Math.pow(t, 4)) / (K1 * (1 - Math.pow(nu, 2)) * Math.pow(De, 2));
+
+            // Combined spring rate if helical is included
+            const combinedRate = includeHelical ? 
+                (1 / ((1 / bellevilleRate) + (1 / helicalData.springRate))) : 
+                bellevilleRate;
 
             // Load at given deflection
             const s = requiredDeflection;
-            const loadAtDeflection = springRate * s;
+            const loadAtDeflection = combinedRate * s;
 
-            // Stress calculation (MPa)
+            // Stress calculation (MPa) - for Belleville only
             const M = 6 / Math.log(ratio);
             const stress = (4 * E) / (M * (1 - Math.pow(nu, 2))) * (Math.pow(t, 2) / Math.pow(De, 2)) * s;
 
@@ -544,26 +721,60 @@
             // Stack calculations
             let stackLoad, stackDeflection;
             if (stackConfig === 'series') {
-                // Series: same load, deflections add
                 stackLoad = loadAtDeflection;
                 stackDeflection = s * numSprings;
             } else if (stackConfig === 'parallel') {
-                // Parallel: loads add, same deflection
                 stackLoad = loadAtDeflection * numSprings;
                 stackDeflection = s;
             } else {
-                // Single spring
                 stackLoad = loadAtDeflection;
                 stackDeflection = s;
             }
 
+            // Generate force and stress curves
+            const maxDeflection = Math.min(h0 * 0.75, h0); // Max 75% of cone height
+            const numPoints = 50;
+            const deflectionPoints = [];
+            const forcePointsBelleville = [];
+            const forcePointsHelical = [];
+            const forcePointsCombined = [];
+            const stressPoints = [];
+
+            for (let i = 0; i <= numPoints; i++) {
+                const deflection = (maxDeflection / numPoints) * i;
+                deflectionPoints.push(deflection);
+                
+                // Belleville force
+                const forceBelleville = bellevilleRate * deflection;
+                forcePointsBelleville.push(forceBelleville);
+                
+                // Helical force (if included)
+                if (includeHelical) {
+                    const forceHelical = helicalData.springRate * deflection;
+                    forcePointsHelical.push(forceHelical);
+                    
+                    // Combined force (series connection)
+                    const forceCombined = combinedRate * deflection;
+                    forcePointsCombined.push(forceCombined);
+                }
+                
+                // Stress
+                const stressAtDeflection = (4 * E) / (M * (1 - Math.pow(nu, 2))) * 
+                    (Math.pow(t, 2) / Math.pow(De, 2)) * deflection;
+                stressPoints.push(stressAtDeflection);
+            }
+
             // Display results
-            document.getElementById('springRate').textContent = springRate.toFixed(2);
+            document.getElementById('springRate').textContent = combinedRate.toFixed(2);
             document.getElementById('loadAtDeflection').textContent = loadAtDeflection.toFixed(2);
             document.getElementById('maxStress').textContent = stress.toFixed(2);
             document.getElementById('safetyFactor').textContent = safetyFactor.toFixed(2);
             document.getElementById('deflectionRatio').textContent = deflectionRatio.toFixed(1);
             document.getElementById('stackLoad').textContent = stackLoad.toFixed(2);
+
+            // Create charts
+            createForceChart(deflectionPoints, forcePointsBelleville, forcePointsHelical, forcePointsCombined, includeHelical);
+            createStressChart(deflectionPoints, stressPoints, yieldStrength);
 
             // Generate recommendations
             const recommendations = [];
@@ -599,6 +810,12 @@
                 recommendations.push('Consider optimizing material thickness to reduce cost if appropriate');
             }
 
+            if (includeHelical) {
+                recommendations.push('Combined configuration: Belleville spring rate = ' + bellevilleRate.toFixed(2) + ' N/mm, Helical spring rate = ' + helicalData.springRate.toFixed(2) + ' N/mm');
+                recommendations.push('Combined spring rate = ' + combinedRate.toFixed(2) + ' N/mm (springs in series)');
+                recommendations.push('The helical spring will provide additional compliance and vibration damping');
+            }
+
             if (deflectionRatio > 75) {
                 recommendations.push('Deflection exceeds 75% of cone height - risk of permanent deformation');
                 recommendations.push('Recommended maximum deflection: ' + (h0 * 0.75).toFixed(2) + ' mm');
@@ -617,7 +834,6 @@
                 recommendations.push('Material thickness is relatively high - verify deflection characteristics');
             }
 
-            // Pressure regulator specific recommendations
             recommendations.push('For pressure regulator at ' + regulatorPressure + ' bar, ensure consistent force-deflection curve');
             
             if (stackConfig === 'series') {
@@ -636,6 +852,7 @@
             recommendations.push('Consider surface treatment (shot peening) to increase fatigue life in cyclic pressure applications');
             recommendations.push('Ensure proper support and loading surfaces to prevent edge stress concentrations');
             recommendations.push('Verify alignment in assembly to maintain uniform load distribution');
+            recommendations.push('Reference: Belleville Spring Design Guide.pdf and Belleville_Springs.py for detailed calculations');
 
             // Display recommendations
             const recList = document.getElementById('recommendationsList');
@@ -653,11 +870,239 @@
             document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }
 
+        function createForceChart(deflectionPoints, forcePointsBelleville, forcePointsHelical, forcePointsCombined, includeHelical) {
+            const svg = document.getElementById('forceChart');
+            const legend = document.getElementById('forceLegend');
+            
+            // Clear existing content
+            svg.innerHTML = '';
+            legend.innerHTML = '';
+            
+            // Chart dimensions
+            const width = 800;
+            const height = 400;
+            const margin = { top: 20, right: 30, bottom: 60, left: 70 };
+            const plotWidth = width - margin.left - margin.right;
+            const plotHeight = height - margin.top - margin.bottom;
+            
+            // Find max values for scaling
+            const maxDeflection = Math.max(...deflectionPoints);
+            const allForces = [...forcePointsBelleville];
+            if (includeHelical) {
+                allForces.push(...forcePointsHelical, ...forcePointsCombined);
+            }
+            const maxForce = Math.max(...allForces) * 1.1;
+            
+            // Create scales
+            const scaleX = (value) => margin.left + (value / maxDeflection) * plotWidth;
+            const scaleY = (value) => height - margin.bottom - (value / maxForce) * plotHeight;
+            
+            // Draw axes
+            const axes = `
+                <line x1="${margin.left}" y1="${height - margin.bottom}" 
+                      x2="${width - margin.right}" y2="${height - margin.bottom}" 
+                      stroke="#333" stroke-width="2"/>
+                <line x1="${margin.left}" y1="${margin.top}" 
+                      x2="${margin.left}" y2="${height - margin.bottom}" 
+                      stroke="#333" stroke-width="2"/>
+            `;
+            svg.innerHTML += axes;
+            
+            // Draw grid lines and labels
+            const numXTicks = 5;
+            const numYTicks = 5;
+            for (let i = 0; i <= numXTicks; i++) {
+                const x = margin.left + (i / numXTicks) * plotWidth;
+                const value = (i / numXTicks) * maxDeflection;
+                svg.innerHTML += `
+                    <line x1="${x}" y1="${height - margin.bottom}" 
+                          x2="${x}" y2="${height - margin.bottom + 5}" 
+                          stroke="#333" stroke-width="1"/>
+                    <text x="${x}" y="${height - margin.bottom + 20}" 
+                          text-anchor="middle" font-size="12" fill="#666">
+                        ${value.toFixed(1)}
+                    </text>
+                `;
+            }
+            
+            for (let i = 0; i <= numYTicks; i++) {
+                const y = height - margin.bottom - (i / numYTicks) * plotHeight;
+                const value = (i / numYTicks) * maxForce;
+                svg.innerHTML += `
+                    <line x1="${margin.left - 5}" y1="${y}" 
+                          x2="${margin.left}" y2="${y}" 
+                          stroke="#333" stroke-width="1"/>
+                    <text x="${margin.left - 10}" y="${y + 4}" 
+                          text-anchor="end" font-size="12" fill="#666">
+                        ${value.toFixed(0)}
+                    </text>
+                `;
+            }
+            
+            // Axis labels
+            svg.innerHTML += `
+                <text x="${width / 2}" y="${height - 5}" 
+                      text-anchor="middle" font-size="14" font-weight="600" fill="#333">
+                    Deflection (mm)
+                </text>
+                <text x="${15}" y="${height / 2}" 
+                      text-anchor="middle" font-size="14" font-weight="600" fill="#333"
+                      transform="rotate(-90 15 ${height / 2})">
+                    Force (N)
+                </text>
+            `;
+            
+            // Draw lines
+            const drawLine = (points, color, width, dashArray) => {
+                let path = `M ${scaleX(deflectionPoints[0])} ${scaleY(points[0])}`;
+                for (let i = 1; i < points.length; i++) {
+                    path += ` L ${scaleX(deflectionPoints[i])} ${scaleY(points[i])}`;
+                }
+                const dashAttr = dashArray ? `stroke-dasharray="${dashArray}"` : '';
+                return `<path d="${path}" stroke="${color}" stroke-width="${width}" fill="none" ${dashAttr}/>`;
+            };
+            
+            svg.innerHTML += drawLine(forcePointsBelleville, 'rgb(102, 126, 234)', 3);
+            legend.innerHTML += `
+                <div class="legend-item">
+                    <div class="legend-color" style="background: rgb(102, 126, 234);"></div>
+                    <span>Belleville Spring</span>
+                </div>
+            `;
+            
+            if (includeHelical) {
+                svg.innerHTML += drawLine(forcePointsHelical, 'rgb(76, 175, 80)', 2, '5,5');
+                svg.innerHTML += drawLine(forcePointsCombined, 'rgb(255, 87, 34)', 3);
+                legend.innerHTML += `
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: rgb(76, 175, 80);"></div>
+                        <span>Helical Spring</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: rgb(255, 87, 34);"></div>
+                        <span>Combined (Series)</span>
+                    </div>
+                `;
+            }
+        }
+
+        function createStressChart(deflectionPoints, stressPoints, yieldStrength) {
+            const svg = document.getElementById('stressChart');
+            const legend = document.getElementById('stressLegend');
+            
+            // Clear existing content
+            svg.innerHTML = '';
+            legend.innerHTML = '';
+            
+            // Chart dimensions
+            const width = 800;
+            const height = 400;
+            const margin = { top: 20, right: 30, bottom: 60, left: 70 };
+            const plotWidth = width - margin.left - margin.right;
+            const plotHeight = height - margin.top - margin.bottom;
+            
+            // Find max values for scaling
+            const maxDeflection = Math.max(...deflectionPoints);
+            const maxStress = Math.max(Math.max(...stressPoints), yieldStrength) * 1.1;
+            
+            // Create scales
+            const scaleX = (value) => margin.left + (value / maxDeflection) * plotWidth;
+            const scaleY = (value) => height - margin.bottom - (value / maxStress) * plotHeight;
+            
+            // Draw axes
+            const axes = `
+                <line x1="${margin.left}" y1="${height - margin.bottom}" 
+                      x2="${width - margin.right}" y2="${height - margin.bottom}" 
+                      stroke="#333" stroke-width="2"/>
+                <line x1="${margin.left}" y1="${margin.top}" 
+                      x2="${margin.left}" y2="${height - margin.bottom}" 
+                      stroke="#333" stroke-width="2"/>
+            `;
+            svg.innerHTML += axes;
+            
+            // Draw grid lines and labels
+            const numXTicks = 5;
+            const numYTicks = 5;
+            for (let i = 0; i <= numXTicks; i++) {
+                const x = margin.left + (i / numXTicks) * plotWidth;
+                const value = (i / numXTicks) * maxDeflection;
+                svg.innerHTML += `
+                    <line x1="${x}" y1="${height - margin.bottom}" 
+                          x2="${x}" y2="${height - margin.bottom + 5}" 
+                          stroke="#333" stroke-width="1"/>
+                    <text x="${x}" y="${height - margin.bottom + 20}" 
+                          text-anchor="middle" font-size="12" fill="#666">
+                        ${value.toFixed(1)}
+                    </text>
+                `;
+            }
+            
+            for (let i = 0; i <= numYTicks; i++) {
+                const y = height - margin.bottom - (i / numYTicks) * plotHeight;
+                const value = (i / numYTicks) * maxStress;
+                svg.innerHTML += `
+                    <line x1="${margin.left - 5}" y1="${y}" 
+                          x2="${margin.left}" y2="${y}" 
+                          stroke="#333" stroke-width="1"/>
+                    <text x="${margin.left - 10}" y="${y + 4}" 
+                          text-anchor="end" font-size="12" fill="#666">
+                        ${value.toFixed(0)}
+                    </text>
+                `;
+            }
+            
+            // Axis labels
+            svg.innerHTML += `
+                <text x="${width / 2}" y="${height - 5}" 
+                      text-anchor="middle" font-size="14" font-weight="600" fill="#333">
+                    Deflection (mm)
+                </text>
+                <text x="${15}" y="${height / 2}" 
+                      text-anchor="middle" font-size="14" font-weight="600" fill="#333"
+                      transform="rotate(-90 15 ${height / 2})">
+                    Stress (MPa)
+                </text>
+            `;
+            
+            // Draw stress line
+            let path = `M ${scaleX(deflectionPoints[0])} ${scaleY(stressPoints[0])}`;
+            for (let i = 1; i < stressPoints.length; i++) {
+                path += ` L ${scaleX(deflectionPoints[i])} ${scaleY(stressPoints[i])}`;
+            }
+            svg.innerHTML += `<path d="${path}" stroke="rgb(102, 126, 234)" stroke-width="3" fill="none"/>`;
+            
+            // Draw yield strength line
+            const yieldY = scaleY(yieldStrength);
+            svg.innerHTML += `
+                <line x1="${margin.left}" y1="${yieldY}" 
+                      x2="${width - margin.right}" y2="${yieldY}" 
+                      stroke="rgb(244, 67, 54)" stroke-width="2" stroke-dasharray="10,5"/>
+            `;
+            
+            legend.innerHTML = `
+                <div class="legend-item">
+                    <div class="legend-color" style="background: rgb(102, 126, 234);"></div>
+                    <span>Belleville Stress</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: rgb(244, 67, 54);"></div>
+                    <span>Yield Strength Limit</span>
+                </div>
+            `;
+        }
+
         function resetForm() {
             document.getElementById('springForm').reset();
             document.getElementById('results').classList.remove('show');
             document.getElementById('youngsModulus').value = '';
             document.getElementById('yieldStrength').value = '';
+            document.getElementById('helicalInputs').style.display = 'none';
+            
+            // Clear charts
+            document.getElementById('forceChart').innerHTML = '';
+            document.getElementById('stressChart').innerHTML = '';
+            document.getElementById('forceLegend').innerHTML = '';
+            document.getElementById('stressLegend').innerHTML = '';
         }
     </script>
 </body>
