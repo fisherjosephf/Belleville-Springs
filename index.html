@@ -1,0 +1,1119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Belleville Spring Design Calculator for Pressure Regulators</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .info-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            border-left: 5px solid #667eea;
+        }
+
+        .info-section h2 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .info-section p {
+            line-height: 1.6;
+            color: #555;
+        }
+
+        .form-section {
+            margin-bottom: 30px;
+        }
+
+        .form-section h3 {
+            color: #333;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #667eea;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+            font-size: 0.95em;
+        }
+
+        .form-group input,
+        .form-group select {
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: all 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-group small {
+            color: #666;
+            margin-top: 5px;
+            font-size: 0.85em;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        button {
+            padding: 15px 30px;
+            font-size: 1.1em;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+
+        .btn-calculate {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            flex: 1;
+        }
+
+        .btn-calculate:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-reset {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-reset:hover {
+            background: #5a6268;
+        }
+
+        .results {
+            display: none;
+            margin-top: 30px;
+            padding: 30px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border: 2px solid #667eea;
+        }
+
+        .results.show {
+            display: block;
+            animation: slideIn 0.5s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .results h3 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .result-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .result-item {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+
+        .result-item h4 {
+            color: #333;
+            margin-bottom: 8px;
+            font-size: 0.95em;
+        }
+
+        .result-item .value {
+            font-size: 1.5em;
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .result-item .unit {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .recommendations {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+
+        .recommendations h4 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .recommendations ul {
+            list-style-position: inside;
+            color: #555;
+            line-height: 1.8;
+        }
+
+        .recommendations li {
+            padding: 5px 0;
+        }
+
+        .warning {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+
+        .warning h4 {
+            color: #856404;
+            margin-bottom: 10px;
+        }
+
+        .warning p {
+            color: #856404;
+        }
+
+        .success {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+
+        .success h4 {
+            color: #155724;
+            margin-bottom: 10px;
+        }
+
+        .success p {
+            color: #155724;
+        }
+
+        footer {
+            background: #f8f9fa;
+            padding: 20px;
+            text-align: center;
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .diagram {
+            text-align: center;
+            margin: 20px 0;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+        }
+
+        .diagram img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        .chart-container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .chart-wrapper {
+            position: relative;
+            min-height: 400px;
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 10px;
+        }
+
+        .chart-wrapper svg {
+            width: 100%;
+            height: 400px;
+        }
+
+        .chart-title {
+            text-align: center;
+            font-weight: 600;
+            font-size: 1.1em;
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .chart-legend {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .legend-color {
+            width: 30px;
+            height: 3px;
+            border-radius: 2px;
+        }
+
+        .helical-section {
+            background: #e3f2fd;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            border-left: 5px solid #2196f3;
+        }
+
+        .helical-section h4 {
+            color: #1976d2;
+            margin-bottom: 15px;
+        }
+
+        .toggle-section {
+            margin: 20px 0;
+        }
+
+        .toggle-label {
+            display: flex;
+            align-items: center;
+            font-weight: 600;
+            color: #333;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .toggle-label input[type="checkbox"] {
+            margin-right: 10px;
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🔧 Belleville Spring Design Calculator</h1>
+            <p>Design and Analyze Disc Springs for Pressure Regulators</p>
+        </header>
+
+        <div class="content">
+            <div class="info-section">
+                <h2>About Belleville Springs in Pressure Regulators</h2>
+                <p>
+                    Belleville springs (disc springs) are conical washers widely used in pressure regulators to provide 
+                    precise load characteristics. They offer high load capacity in a small space and can be stacked 
+                    in series or parallel to achieve desired load-deflection characteristics. This calculator helps you 
+                    design the optimal spring configuration for your pressure regulator application.
+                </p>
+            </div>
+
+            <form id="springForm">
+                <!-- Spring Geometry Section -->
+                <div class="form-section">
+                    <h3>1. Spring Geometry</h3>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="outerDiameter">Outer Diameter (De)</label>
+                            <input type="number" id="outerDiameter" step="0.001" required>
+                            <small>Outside diameter of the spring (in)</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="innerDiameter">Inner Diameter (Di)</label>
+                            <input type="number" id="innerDiameter" step="0.001" required>
+                            <small>Inside diameter of the spring (in)</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="thickness">Material Thickness (t)</label>
+                            <input type="number" id="thickness" step="0.0001" required>
+                            <small>Thickness of the material (in)</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="freeHeight">Free Height (h₀)</label>
+                            <input type="number" id="freeHeight" step="0.0001" required>
+                            <small>Cone height at no load (in)</small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Material Properties Section -->
+                <div class="form-section">
+                    <h3>2. Material Properties</h3>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="material">Material Type</label>
+                            <select id="material" required>
+                                <option value="">Select Material</option>
+                                <option value="spring_steel">Spring Steel (E=30 Mpsi)</option>
+                                <option value="stainless_steel">Stainless Steel (E=28 Mpsi)</option>
+                                <option value="bronze">Bronze (E=16 Mpsi)</option>
+                                <option value="custom">Custom</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="youngsModulus">Young's Modulus (E)</label>
+                            <input type="number" id="youngsModulus" step="100000" required>
+                            <small>Elastic modulus in psi</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="poissonsRatio">Poisson's Ratio (ν)</label>
+                            <input type="number" id="poissonsRatio" step="0.01" value="0.3" required>
+                            <small>Typically 0.3 for steel</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="yieldStrength">Yield Strength</label>
+                            <input type="number" id="yieldStrength" step="1000" required>
+                            <small>Material yield strength (psi)</small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Loading Requirements Section -->
+                <div class="form-section">
+                    <h3>3. Loading Requirements for Pressure Regulator</h3>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="requiredLoad">Required Load (F)</label>
+                            <input type="number" id="requiredLoad" step="0.1" required>
+                            <small>Operating load required (lbf)</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="requiredDeflection">Required Deflection (s)</label>
+                            <input type="number" id="requiredDeflection" step="0.0001" required>
+                            <small>Required deflection (in)</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="regulatorPressure">Regulator Pressure</label>
+                            <input type="number" id="regulatorPressure" step="1" required>
+                            <small>Operating pressure (psi)</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="stackConfig">Stack Configuration</label>
+                            <select id="stackConfig" required>
+                                <option value="single">Single Spring</option>
+                                <option value="series">Series (Same Direction)</option>
+                                <option value="parallel">Parallel (Opposite Direction)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="numberOfSprings">Number of Springs in Stack</label>
+                            <input type="number" id="numberOfSprings" min="1" value="1" required>
+                            <small>Number of springs in the configuration</small>
+                        </div>
+                    </div>
+                    
+                    <!-- Helical Spring Combination Option -->
+                    <div class="helical-section">
+                        <div class="toggle-section">
+                            <label class="toggle-label">
+                                <input type="checkbox" id="includeHelical">
+                                Include Helical Spring (Combined Configuration)
+                            </label>
+                        </div>
+                        <div id="helicalInputs" style="display: none;">
+                            <h4>Helical Spring Parameters</h4>
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label for="helicalWireDiameter">Wire Diameter (d)</label>
+                                    <input type="number" id="helicalWireDiameter" step="0.001">
+                                    <small>Helical spring wire diameter (in)</small>
+                                </div>
+                                <div class="form-group">
+                                    <label for="helicalMeanDiameter">Mean Coil Diameter (D)</label>
+                                    <input type="number" id="helicalMeanDiameter" step="0.001">
+                                    <small>Mean diameter of coil (in)</small>
+                                </div>
+                                <div class="form-group">
+                                    <label for="helicalActiveCoils">Active Coils (Na)</label>
+                                    <input type="number" id="helicalActiveCoils" step="0.1">
+                                    <small>Number of active coils</small>
+                                </div>
+                                <div class="form-group">
+                                    <label for="helicalShearModulus">Shear Modulus (G)</label>
+                                    <input type="number" id="helicalShearModulus" step="100000" value="11500000">
+                                    <small>Shear modulus in psi (Steel: 11.5 Mpsi)</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="button-group">
+                    <button type="submit" class="btn-calculate">Calculate Design</button>
+                    <button type="button" class="btn-reset" onclick="resetForm()">Reset</button>
+                </div>
+            </form>
+
+            <div id="results" class="results">
+                <h3>Design Results</h3>
+                <div class="result-grid">
+                    <div class="result-item">
+                        <h4>Spring Rate</h4>
+                        <div class="value" id="springRate">-</div>
+                        <div class="unit">lbf/in</div>
+                    </div>
+                    <div class="result-item">
+                        <h4>Load at Deflection</h4>
+                        <div class="value" id="loadAtDeflection">-</div>
+                        <div class="unit">lbf</div>
+                    </div>
+                    <div class="result-item">
+                        <h4>Maximum Stress</h4>
+                        <div class="value" id="maxStress">-</div>
+                        <div class="unit">psi</div>
+                    </div>
+                    <div class="result-item">
+                        <h4>Safety Factor</h4>
+                        <div class="value" id="safetyFactor">-</div>
+                        <div class="unit"></div>
+                    </div>
+                    <div class="result-item">
+                        <h4>Deflection Ratio</h4>
+                        <div class="value" id="deflectionRatio">-</div>
+                        <div class="unit">%</div>
+                    </div>
+                    <div class="result-item">
+                        <h4>Stack Load</h4>
+                        <div class="value" id="stackLoad">-</div>
+                        <div class="unit">lbf</div>
+                    </div>
+                </div>
+
+                <div id="statusMessage"></div>
+
+                <div class="chart-container">
+                    <div class="chart-title">Force vs Displacement</div>
+                    <div class="chart-wrapper">
+                        <svg id="forceChart" viewBox="0 0 800 400" preserveAspectRatio="xMidYMid meet"></svg>
+                    </div>
+                    <div id="forceLegend" class="chart-legend"></div>
+                </div>
+
+                <div class="chart-container">
+                    <div class="chart-title">Stress vs Displacement</div>
+                    <div class="chart-wrapper">
+                        <svg id="stressChart" viewBox="0 0 800 400" preserveAspectRatio="xMidYMid meet"></svg>
+                    </div>
+                    <div id="stressLegend" class="chart-legend"></div>
+                </div>
+
+                <div class="recommendations">
+                    <h4>Design Recommendations for Pressure Regulator Application:</h4>
+                    <ul id="recommendationsList"></ul>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>© 2025 Belleville Spring Design Calculator | For engineering guidance only - verify all calculations</p>
+        </footer>
+    </div>
+
+    <script>
+        // Material presets - IPS units (psi)
+        const materials = {
+            spring_steel: { E: 30000000, yield: 203000 },      // 206 GPa = 30M psi, 1400 MPa = 203k psi
+            stainless_steel: { E: 28000000, yield: 174000 },   // 190 GPa = 28M psi, 1200 MPa = 174k psi
+            bronze: { E: 16000000, yield: 58000 }              // 110 GPa = 16M psi, 400 MPa = 58k psi
+        };
+
+        // Constants
+        const MAX_DEFLECTION_RATIO = 0.75; // Maximum safe deflection as fraction of cone height
+        const MIN_SAFETY_FACTOR = 1.5; // Minimum recommended safety factor for pressure regulators
+        const OPTIMAL_SAFETY_FACTOR = 2.5; // Upper bound of optimal safety factor range
+
+        // Update material properties when material type is selected
+        document.getElementById('material').addEventListener('change', function() {
+            const material = this.value;
+            if (material && material !== 'custom') {
+                document.getElementById('youngsModulus').value = materials[material].E;
+                document.getElementById('yieldStrength').value = materials[material].yield;
+            }
+        });
+
+        // Toggle helical spring inputs
+        document.getElementById('includeHelical').addEventListener('change', function() {
+            const helicalInputs = document.getElementById('helicalInputs');
+            if (this.checked) {
+                helicalInputs.style.display = 'block';
+                // Make helical inputs required when checked
+                document.getElementById('helicalWireDiameter').required = true;
+                document.getElementById('helicalMeanDiameter').required = true;
+                document.getElementById('helicalActiveCoils').required = true;
+            } else {
+                helicalInputs.style.display = 'none';
+                // Remove required attribute when unchecked
+                document.getElementById('helicalWireDiameter').required = false;
+                document.getElementById('helicalMeanDiameter').required = false;
+                document.getElementById('helicalActiveCoils').required = false;
+            }
+        });
+
+        // Form submission
+        document.getElementById('springForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            calculateSpring();
+        });
+
+        function calculateSpring() {
+            // Get input values - all in IPS units (inches, psi, lbf)
+            const De = parseFloat(document.getElementById('outerDiameter').value);
+            const Di = parseFloat(document.getElementById('innerDiameter').value);
+            const t = parseFloat(document.getElementById('thickness').value);
+            const h0 = parseFloat(document.getElementById('freeHeight').value);
+            const E = parseFloat(document.getElementById('youngsModulus').value); // Already in psi
+            const nu = parseFloat(document.getElementById('poissonsRatio').value);
+            const yieldStrength = parseFloat(document.getElementById('yieldStrength').value); // Already in psi
+            const requiredLoad = parseFloat(document.getElementById('requiredLoad').value);
+            const requiredDeflection = parseFloat(document.getElementById('requiredDeflection').value);
+            const regulatorPressure = parseFloat(document.getElementById('regulatorPressure').value);
+            const stackConfig = document.getElementById('stackConfig').value;
+            const numSprings = parseInt(document.getElementById('numberOfSprings').value);
+
+            // Helical spring parameters (if included)
+            const includeHelical = document.getElementById('includeHelical').checked;
+            let helicalData = null;
+            if (includeHelical) {
+                const d = parseFloat(document.getElementById('helicalWireDiameter').value);
+                const D = parseFloat(document.getElementById('helicalMeanDiameter').value);
+                const Na = parseFloat(document.getElementById('helicalActiveCoils').value);
+                const G = parseFloat(document.getElementById('helicalShearModulus').value); // Already in psi
+                
+                // Helical spring rate formula: k = (G * d^4) / (8 * D^3 * Na)
+                // Standard formula for compression/extension helical springs
+                // Result in lbf/in
+                const helicalRate = (G * Math.pow(d, 4)) / (8 * Math.pow(D, 3) * Na);
+                
+                helicalData = {
+                    wireDiameter: d,
+                    meanDiameter: D,
+                    activeCoils: Na,
+                    shearModulus: G,
+                    springRate: helicalRate
+                };
+            }
+
+            // Validation
+            if (De <= Di) {
+                alert('Outer diameter must be greater than inner diameter');
+                return;
+            }
+
+            if (h0 <= t) {
+                alert('Free height must be greater than material thickness');
+                return;
+            }
+
+            // Calculate derived dimensions
+            const delta = (De - Di) / 2;
+            const R = De / 2;
+            const r = Di / 2;
+            const ratio = De / Di;
+
+            // Calculate Almen-Laszlo constants for Belleville springs
+            // These constants are derived from the theory of conical shells
+            // Reference: Almen & Laszlo (1936), "The Uniform-Section Disk Spring"
+            const K1 = (1 / Math.PI) * ((ratio - 1) / ratio) * (ratio / Math.log(ratio) - 1);
+            const K2 = (6 / (Math.PI * Math.log(ratio))) * ((ratio - 1) / Math.log(ratio) - 1);
+            const K3 = (6 / (Math.PI * Math.log(ratio))) * ((ratio - 1) / (2 * Math.log(ratio)) - 1);
+
+            // Spring rate calculation (lbf/in) using Almen-Laszlo formula
+            const bellevilleRate = (4 * E * Math.pow(t, 4)) / (K1 * (1 - Math.pow(nu, 2)) * Math.pow(De, 2));
+
+            // Combined spring rate if helical is included (series connection)
+            const combinedRate = includeHelical ? 
+                (1 / ((1 / bellevilleRate) + (1 / helicalData.springRate))) : 
+                bellevilleRate;
+
+            // Load at given deflection
+            const s = requiredDeflection;
+            const loadAtDeflection = combinedRate * s;
+
+            // Stress calculation (psi) - for Belleville only
+            // M is the stress coefficient from Almen-Laszlo theory
+            const M = 6 / Math.log(ratio);
+            const stress = (4 * E) / (M * (1 - Math.pow(nu, 2))) * (Math.pow(t, 2) / Math.pow(De, 2)) * s;
+
+            // Safety factor
+            const safetyFactor = yieldStrength / stress;
+
+            // Deflection ratio (percentage of cone height)
+            const deflectionRatio = (s / h0) * 100;
+
+            // Stack calculations
+            let stackLoad, stackDeflection;
+            if (stackConfig === 'series') {
+                stackLoad = loadAtDeflection;
+                stackDeflection = s * numSprings;
+            } else if (stackConfig === 'parallel') {
+                stackLoad = loadAtDeflection * numSprings;
+                stackDeflection = s;
+            } else {
+                stackLoad = loadAtDeflection;
+                stackDeflection = s;
+            }
+
+            // Generate force and stress curves
+            const maxDeflection = Math.min(h0 * MAX_DEFLECTION_RATIO, h0); // Max 75% of cone height
+            const numPoints = 50;
+            const deflectionPoints = [];
+            const forcePointsBelleville = [];
+            const forcePointsHelical = [];
+            const forcePointsCombined = [];
+            const stressPoints = [];
+
+            for (let i = 0; i <= numPoints; i++) {
+                const deflection = (maxDeflection / numPoints) * i;
+                deflectionPoints.push(deflection);
+                
+                // Belleville force
+                const forceBelleville = bellevilleRate * deflection;
+                forcePointsBelleville.push(forceBelleville);
+                
+                // Helical force (if included)
+                if (includeHelical) {
+                    const forceHelical = helicalData.springRate * deflection;
+                    forcePointsHelical.push(forceHelical);
+                    
+                    // Combined force (series connection)
+                    const forceCombined = combinedRate * deflection;
+                    forcePointsCombined.push(forceCombined);
+                }
+                
+                // Stress
+                const stressAtDeflection = (4 * E) / (M * (1 - Math.pow(nu, 2))) * 
+                    (Math.pow(t, 2) / Math.pow(De, 2)) * deflection;
+                stressPoints.push(stressAtDeflection);
+            }
+
+            // Display results
+            document.getElementById('springRate').textContent = combinedRate.toFixed(2);
+            document.getElementById('loadAtDeflection').textContent = loadAtDeflection.toFixed(2);
+            document.getElementById('maxStress').textContent = stress.toFixed(2);
+            document.getElementById('safetyFactor').textContent = safetyFactor.toFixed(2);
+            document.getElementById('deflectionRatio').textContent = deflectionRatio.toFixed(1);
+            document.getElementById('stackLoad').textContent = stackLoad.toFixed(2);
+
+            // Create charts
+            createForceChart(deflectionPoints, forcePointsBelleville, forcePointsHelical, forcePointsCombined, includeHelical);
+            createStressChart(deflectionPoints, stressPoints, yieldStrength);
+
+            // Generate recommendations
+            const recommendations = [];
+            const statusDiv = document.getElementById('statusMessage');
+            statusDiv.innerHTML = '';
+
+            if (safetyFactor < MIN_SAFETY_FACTOR) {
+                statusDiv.innerHTML = `
+                    <div class="warning">
+                        <h4>⚠️ Warning: Low Safety Factor</h4>
+                        <p>The design has a safety factor of ${safetyFactor.toFixed(2)}, which is below the recommended minimum of ${MIN_SAFETY_FACTOR} for pressure regulator applications.</p>
+                    </div>
+                `;
+                recommendations.push('Increase material thickness or use higher strength material');
+                recommendations.push('Consider reducing the required deflection');
+                recommendations.push('Review the load requirements');
+            } else if (safetyFactor >= MIN_SAFETY_FACTOR && safetyFactor <= OPTIMAL_SAFETY_FACTOR) {
+                statusDiv.innerHTML = `
+                    <div class="success">
+                        <h4>✓ Acceptable Design</h4>
+                        <p>The design has an adequate safety factor of ${safetyFactor.toFixed(2)} for typical pressure regulator applications.</p>
+                    </div>
+                `;
+                recommendations.push('Safety factor is within acceptable range for pressure regulators');
+            } else {
+                statusDiv.innerHTML = `
+                    <div class="success">
+                        <h4>✓ Conservative Design</h4>
+                        <p>The design has a high safety factor of ${safetyFactor.toFixed(2)}, providing excellent reliability.</p>
+                    </div>
+                `;
+                recommendations.push('Design is conservative with high safety factor');
+                recommendations.push('Consider optimizing material thickness to reduce cost if appropriate');
+            }
+
+            if (includeHelical) {
+                recommendations.push('Combined configuration: Belleville spring rate = ' + bellevilleRate.toFixed(2) + ' lbf/in, Helical spring rate = ' + helicalData.springRate.toFixed(2) + ' lbf/in');
+                recommendations.push('Combined spring rate = ' + combinedRate.toFixed(2) + ' lbf/in (springs in series)');
+                recommendations.push('The helical spring will provide additional compliance and vibration damping');
+            }
+
+            if (deflectionRatio > 75) {
+                recommendations.push('Deflection exceeds 75% of cone height - risk of permanent deformation');
+                recommendations.push('Recommended maximum deflection: ' + (h0 * MAX_DEFLECTION_RATIO).toFixed(4) + ' in');
+            } else {
+                recommendations.push('Deflection ratio is within safe limits (< 75% of cone height)');
+            }
+
+            if (ratio < 1.5 || ratio > 3.0) {
+                recommendations.push('De/Di ratio of ' + ratio.toFixed(2) + ' is outside typical range (1.5-3.0)');
+                recommendations.push('Consider adjusting diameters for optimal performance');
+            } else {
+                recommendations.push('Diameter ratio is within optimal range for Belleville springs');
+            }
+
+            if (t > (De / 20)) {
+                recommendations.push('Material thickness is relatively high - verify deflection characteristics');
+            }
+
+            recommendations.push('For pressure regulator at ' + regulatorPressure + ' psi, ensure consistent force-deflection curve');
+            
+            if (stackConfig === 'series') {
+                recommendations.push('Series configuration: Total deflection = ' + stackDeflection.toFixed(4) + ' in with ' + numSprings + ' springs');
+                recommendations.push('Series stacking provides increased deflection range for pressure regulation');
+            } else if (stackConfig === 'parallel') {
+                recommendations.push('Parallel configuration: Total load capacity = ' + stackLoad.toFixed(2) + ' lbf with ' + numSprings + ' springs');
+                recommendations.push('Parallel stacking provides higher load capacity for pressure regulation');
+            }
+
+            if (Math.abs(loadAtDeflection - requiredLoad) > requiredLoad * 0.1) {
+                const difference = ((loadAtDeflection - requiredLoad) / requiredLoad * 100).toFixed(1);
+                recommendations.push('Calculated load differs from required by ' + Math.abs(difference) + '% - adjust deflection or stack configuration');
+            }
+
+            recommendations.push('Consider surface treatment (shot peening) to increase fatigue life in cyclic pressure applications');
+            recommendations.push('Ensure proper support and loading surfaces to prevent edge stress concentrations');
+            recommendations.push('Verify alignment in assembly to maintain uniform load distribution');
+            recommendations.push('Reference: Belleville Spring Design Guide.pdf and Belleville_Springs.py for detailed calculations');
+
+            // Display recommendations
+            const recList = document.getElementById('recommendationsList');
+            recList.innerHTML = '';
+            recommendations.forEach(rec => {
+                const li = document.createElement('li');
+                li.textContent = rec;
+                recList.appendChild(li);
+            });
+
+            // Show results
+            document.getElementById('results').classList.add('show');
+
+            // Scroll to results
+            document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        function createForceChart(deflectionPoints, forcePointsBelleville, forcePointsHelical, forcePointsCombined, includeHelical) {
+            const svg = document.getElementById('forceChart');
+            const legend = document.getElementById('forceLegend');
+            
+            // Clear existing content
+            svg.innerHTML = '';
+            legend.innerHTML = '';
+            
+            // Chart dimensions
+            const width = 800;
+            const height = 400;
+            const margin = { top: 20, right: 30, bottom: 60, left: 70 };
+            const plotWidth = width - margin.left - margin.right;
+            const plotHeight = height - margin.top - margin.bottom;
+            
+            // Find max values for scaling
+            const maxDeflection = Math.max(...deflectionPoints);
+            const allForces = [...forcePointsBelleville];
+            if (includeHelical) {
+                allForces.push(...forcePointsHelical, ...forcePointsCombined);
+            }
+            const maxForce = Math.max(...allForces) * 1.1;
+            
+            // Create scales
+            const scaleX = (value) => margin.left + (value / maxDeflection) * plotWidth;
+            const scaleY = (value) => height - margin.bottom - (value / maxForce) * plotHeight;
+            
+            // Draw axes
+            const axes = `
+                <line x1="${margin.left}" y1="${height - margin.bottom}" 
+                      x2="${width - margin.right}" y2="${height - margin.bottom}" 
+                      stroke="#333" stroke-width="2"/>
+                <line x1="${margin.left}" y1="${margin.top}" 
+                      x2="${margin.left}" y2="${height - margin.bottom}" 
+                      stroke="#333" stroke-width="2"/>
+            `;
+            svg.innerHTML += axes;
+            
+            // Draw grid lines and labels
+            const numXTicks = 5;
+            const numYTicks = 5;
+            for (let i = 0; i <= numXTicks; i++) {
+                const x = margin.left + (i / numXTicks) * plotWidth;
+                const value = (i / numXTicks) * maxDeflection;
+                svg.innerHTML += `
+                    <line x1="${x}" y1="${height - margin.bottom}" 
+                          x2="${x}" y2="${height - margin.bottom + 5}" 
+                          stroke="#333" stroke-width="1"/>
+                    <text x="${x}" y="${height - margin.bottom + 20}" 
+                          text-anchor="middle" font-size="12" fill="#666">
+                        ${value.toFixed(1)}
+                    </text>
+                `;
+            }
+            
+            for (let i = 0; i <= numYTicks; i++) {
+                const y = height - margin.bottom - (i / numYTicks) * plotHeight;
+                const value = (i / numYTicks) * maxForce;
+                svg.innerHTML += `
+                    <line x1="${margin.left - 5}" y1="${y}" 
+                          x2="${margin.left}" y2="${y}" 
+                          stroke="#333" stroke-width="1"/>
+                    <text x="${margin.left - 10}" y="${y + 4}" 
+                          text-anchor="end" font-size="12" fill="#666">
+                        ${value.toFixed(0)}
+                    </text>
+                `;
+            }
+            
+            // Axis labels
+            svg.innerHTML += `
+                <text x="${width / 2}" y="${height - 5}" 
+                      text-anchor="middle" font-size="14" font-weight="600" fill="#333">
+                    Deflection (in)
+                </text>
+                <text x="${15}" y="${height / 2}" 
+                      text-anchor="middle" font-size="14" font-weight="600" fill="#333"
+                      transform="rotate(-90 15 ${height / 2})">
+                    Force (lbf)
+                </text>
+            `;
+            
+            // Draw lines
+            const drawLine = (points, color, width, dashArray) => {
+                let path = `M ${scaleX(deflectionPoints[0])} ${scaleY(points[0])}`;
+                for (let i = 1; i < points.length; i++) {
+                    path += ` L ${scaleX(deflectionPoints[i])} ${scaleY(points[i])}`;
+                }
+                const dashAttr = dashArray ? `stroke-dasharray="${dashArray}"` : '';
+                return `<path d="${path}" stroke="${color}" stroke-width="${width}" fill="none" ${dashAttr}/>`;
+            };
+            
+            svg.innerHTML += drawLine(forcePointsBelleville, 'rgb(102, 126, 234)', 3);
+            legend.innerHTML += `
+                <div class="legend-item">
+                    <div class="legend-color" style="background: rgb(102, 126, 234);"></div>
+                    <span>Belleville Spring</span>
+                </div>
+            `;
+            
+            if (includeHelical) {
+                svg.innerHTML += drawLine(forcePointsHelical, 'rgb(76, 175, 80)', 2, '5,5');
+                svg.innerHTML += drawLine(forcePointsCombined, 'rgb(255, 87, 34)', 3);
+                legend.innerHTML += `
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: rgb(76, 175, 80);"></div>
+                        <span>Helical Spring</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: rgb(255, 87, 34);"></div>
+                        <span>Combined (Series)</span>
+                    </div>
+                `;
+            }
+        }
+
+        function createStressChart(deflectionPoints, stressPoints, yieldStrength) {
+            const svg = document.getElementById('stressChart');
+            const legend = document.getElementById('stressLegend');
+            
+            // Clear existing content
+            svg.innerHTML = '';
+            legend.innerHTML = '';
+            
+            // Chart dimensions
+            const width = 800;
+            const height = 400;
+            const margin = { top: 20, right: 30, bottom: 60, left: 70 };
+            const plotWidth = width - margin.left - margin.right;
+            const plotHeight = height - margin.top - margin.bottom;
+            
+            // Find max values for scaling
+            const maxDeflection = Math.max(...deflectionPoints);
+            const maxStress = Math.max(Math.max(...stressPoints), yieldStrength) * 1.1;
+            
+            // Create scales
+            const scaleX = (value) => margin.left + (value / maxDeflection) * plotWidth;
+            const scaleY = (value) => height - margin.bottom - (value / maxStress) * plotHeight;
+            
+            // Draw axes
+            const axes = `
+                <line x1="${margin.left}" y1="${height - margin.bottom}" 
+                      x2="${width - margin.right}" y2="${height - margin.bottom}" 
+                      stroke="#333" stroke-width="2"/>
+                <line x1="${margin.left}" y1="${margin.top}" 
+                      x2="${margin.left}" y2="${height - margin.bottom}" 
+                      stroke="#333" stroke-width="2"/>
+            `;
+            svg.innerHTML += axes;
+            
+            // Draw grid lines and labels
+            const numXTicks = 5;
+            const numYTicks = 5;
+            for (let i = 0; i <= numXTicks; i++) {
+                const x = margin.left + (i / numXTicks) * plotWidth;
+                const value = (i / numXTicks) * maxDeflection;
+                svg.innerHTML += `
+                    <line x1="${x}" y1="${height - margin.bottom}" 
+                          x2="${x}" y2="${height - margin.bottom + 5}" 
+                          stroke="#333" stroke-width="1"/>
+                    <text x="${x}" y="${height - margin.bottom + 20}" 
+                          text-anchor="middle" font-size="12" fill="#666">
+                        ${value.toFixed(1)}
+                    </text>
+                `;
+            }
+            
+            for (let i = 0; i <= numYTicks; i++) {
+                const y = height - margin.bottom - (i / numYTicks) * plotHeight;
+                const value = (i / numYTicks) * maxStress;
+                svg.innerHTML += `
+                    <line x1="${margin.left - 5}" y1="${y}" 
+                          x2="${margin.left}" y2="${y}" 
+                          stroke="#333" stroke-width="1"/>
+                    <text x="${margin.left - 10}" y="${y + 4}" 
+                          text-anchor="end" font-size="12" fill="#666">
+                        ${value.toFixed(0)}
+                    </text>
+                `;
+            }
+            
+            // Axis labels
+            svg.innerHTML += `
+                <text x="${width / 2}" y="${height - 5}" 
+                      text-anchor="middle" font-size="14" font-weight="600" fill="#333">
+                    Deflection (in)
+                </text>
+                <text x="${15}" y="${height / 2}" 
+                      text-anchor="middle" font-size="14" font-weight="600" fill="#333"
+                      transform="rotate(-90 15 ${height / 2})">
+                    Stress (psi)
+                </text>
+            `;
+            
+            // Draw stress line
+            let path = `M ${scaleX(deflectionPoints[0])} ${scaleY(stressPoints[0])}`;
+            for (let i = 1; i < stressPoints.length; i++) {
+                path += ` L ${scaleX(deflectionPoints[i])} ${scaleY(stressPoints[i])}`;
+            }
+            svg.innerHTML += `<path d="${path}" stroke="rgb(102, 126, 234)" stroke-width="3" fill="none"/>`;
+            
+            // Draw yield strength line
+            const yieldY = scaleY(yieldStrength);
+            svg.innerHTML += `
+                <line x1="${margin.left}" y1="${yieldY}" 
+                      x2="${width - margin.right}" y2="${yieldY}" 
+                      stroke="rgb(244, 67, 54)" stroke-width="2" stroke-dasharray="10,5"/>
+            `;
+            
+            legend.innerHTML = `
+                <div class="legend-item">
+                    <div class="legend-color" style="background: rgb(102, 126, 234);"></div>
+                    <span>Belleville Stress</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: rgb(244, 67, 54);"></div>
+                    <span>Yield Strength Limit</span>
+                </div>
+            `;
+        }
+
+        function resetForm() {
+            document.getElementById('springForm').reset();
+            document.getElementById('results').classList.remove('show');
+            document.getElementById('youngsModulus').value = '';
+            document.getElementById('yieldStrength').value = '';
+            document.getElementById('helicalInputs').style.display = 'none';
+            
+            // Clear charts
+            document.getElementById('forceChart').innerHTML = '';
+            document.getElementById('stressChart').innerHTML = '';
+            document.getElementById('forceLegend').innerHTML = '';
+            document.getElementById('stressLegend').innerHTML = '';
+        }
+    </script>
+</body>
+</html>
